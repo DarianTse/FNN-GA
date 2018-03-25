@@ -3,6 +3,7 @@
 ## Current Status: 
 
 3/24/2018 : Tested to generation 140 - Looks like they are improving. Behaviour includes drastic turns and sudden stops around red orbs. 
+
 3/25/2018 : The new fitness function is working a lot better. It could also be because of the 2 extra inputs for angle. Solid improvements are seen by generation 15. 
 
 ## Introduction
