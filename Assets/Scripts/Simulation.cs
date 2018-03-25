@@ -30,6 +30,7 @@ public class Simulation : MonoBehaviour {
 
     public float GenerationDuration = 10.0f;
     public float TimeLeft { get; set; }
+    private bool isCountingDown = true;
 
     public uint GenerationCount { get { return ga.GenerationCount; } }  
     public float HighestFitness { get { return ga.HighestFitness; } }
@@ -56,7 +57,8 @@ public class Simulation : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        TimeLeft -= Time.fixedDeltaTime;
+        if(isCountingDown)
+            TimeLeft -= Time.fixedDeltaTime;
         if (TimeLeft <= 0)
         { 
             foreach(LifeformController c in lifeformControllers)
@@ -66,6 +68,11 @@ public class Simulation : MonoBehaviour {
                     c.Die();
                 }
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            isCountingDown = !isCountingDown;
         }
     }
 
