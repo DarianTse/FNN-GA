@@ -35,3 +35,6 @@ Wrapper class for GenoType.cs (Contains the chromosome (solution)) and NeuralNet
 Contains the behaviour of the LifeForm via providing inputs and retrieving outputs from the neural network. 
 
 Inputs - closest energy orb x and y, closest danger orb x and y, current move vec x and y 
+
+Outputs[0] - Left turn rate
+Outputs[1] - Right turn rate
