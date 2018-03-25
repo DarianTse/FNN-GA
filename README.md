@@ -2,7 +2,8 @@
 
 ## Current Status: 
 
-Tested to generation 140 - Looks like they are improving. Behaviour includes drastic turns and sudden stops around red orbs. 
+3/24/2018 : Tested to generation 140 - Looks like they are improving. Behaviour includes drastic turns and sudden stops around red orbs. 
+3/25/2018 : The new fitness function is working a lot better. It could also be because of the 2 extra inputs for angle. Solid improvements are seen by generation 15. 
 
 ## Introduction
 
@@ -41,6 +42,8 @@ Inputs[8] - closest energy orb x and y, closest danger orb x and y, current move
 Outputs[0] - Left turn rate
 
 Outputs[1] - Right turn rate
+
+Also calculates the fitnesss on death or timer end. 
 
 ### Neural Network/ Genetic Algorithm
 
