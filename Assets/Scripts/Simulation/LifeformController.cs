@@ -30,16 +30,28 @@ public class LifeformController : MonoBehaviour {
 
     //Turn speed
     const double MAX_TURN_SPEED = 0.3f;
+
+    //lifeform variables
     const float HP_LOSS_OVER_TIME_VALUE = 1;
-    const float HP_GAIN_VALUE = 20;
-    const float HP_LOSS_VALUE = 100;
-    const float HP_INITIAL = 500;
+    const float HP_GAIN_VALUE = 2;
+    const float HP_LOSS_VALUE = 1;
+    const float HP_INITIAL = 5;
+    const float HP_MAX = 10;
+
+    //Evaluation variables
+    int energyOrbsPicked, dangerOrbsPicked;
+    public float timeAlive;
+    private bool hasEvaluated;
 
     void Start()
     {
         health = HP_INITIAL;
         moveVec = Vector3.zero;
         angle = 0;
+        energyOrbsPicked = 0;
+        dangerOrbsPicked = 0;
+        timeAlive = 0;
+        hasEvaluated = false;
     }
 
     void FixedUpdate()
@@ -47,7 +59,8 @@ public class LifeformController : MonoBehaviour {
         if (health > 0)
         {
             GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
-            health -= HP_LOSS_OVER_TIME_VALUE;
+            health -= HP_LOSS_OVER_TIME_VALUE * Time.fixedDeltaTime;
+            timeAlive += Time.fixedDeltaTime;
 
             int[] closestResourceIndex = WorldController.Instance.GetClosestResourceIndex(transform.position);
 
@@ -57,9 +70,21 @@ public class LifeformController : MonoBehaviour {
             closestDangerX = WorldController.Instance.Resources[closestResourceIndex[1]].position.x;
             closestDangerY = WorldController.Instance.Resources[closestResourceIndex[1]].position.y;
 
+
+            //Angle between closest resource and lifeform
+            //dot product of move vec and lifeform->closestEnergyResource vec 
+
+            //float energyDotP = Vector3.Dot(moveVec, WorldController.Instance.Resources[closestResourceIndex[0]].position - transform.position);
+            //float energyMagnitude = Vector3.Magnitude(WorldController.Instance.Resources[closestResourceIndex[0]].position - transform.position);
+            //float moveMagnitude = Vector3.Magnitude(moveVec);
+            //float energyAngle = MathFunctions.ToDegree(Mathf.Acos(energyDotP / (energyMagnitude * moveMagnitude)));
+
+            float energyAngle = Vector3.Angle(moveVec, WorldController.Instance.Resources[closestResourceIndex[0]].position - transform.position); //RIP, shoulda read unity documentation first
+            float dangerAngle = Vector3.Angle(moveVec, WorldController.Instance.Resources[closestResourceIndex[1]].position - transform.position);
+          
             //Inputs to neural network 
-            double[] inputs = {closestEnergyX, closestEnergyY,
-                            closestDangerX, closestDangerY,
+            double[] inputs = {closestEnergyX, closestEnergyY, energyAngle,
+                            closestDangerX, closestDangerY, dangerAngle,
                               moveVec.x, moveVec.y};
 
             //output values from the nn, outputs are left and right speed
@@ -80,7 +105,7 @@ public class LifeformController : MonoBehaviour {
             moveVec.y = Mathf.Sin((float)angle);
 
             //Update position
-            transform.position += moveVec * (float)speed * 0.1f;
+            transform.position += moveVec * (float)speed * Time.deltaTime;
 
             //Update out of bounds
             Vector3 pos = transform.position;
@@ -95,13 +120,14 @@ public class LifeformController : MonoBehaviour {
                 {
                     case ResourceType.Type.Energy:
                         health += HP_GAIN_VALUE;
-                        CurrentFitness += 1;
+                        if(health > HP_MAX) { health = HP_MAX; }
+                        energyOrbsPicked += 1;
                         WorldController.Instance.RespawnResource(index);
                         Simulation.Instance.EnergyPicked += 1;
                         break;
                     case ResourceType.Type.Danger:
                         health -= HP_LOSS_VALUE;
-                        CurrentFitness -= 5;
+                        dangerOrbsPicked += 1;
                         WorldController.Instance.RespawnResource(index);
                         Simulation.Instance.DangerPicked += 1;
                         break;
@@ -116,15 +142,55 @@ public class LifeformController : MonoBehaviour {
 
     public void Restart()
     {
+        //reset variables
         health = HP_INITIAL;
+        energyOrbsPicked = 0;
+        dangerOrbsPicked = 0;
+        timeAlive = 0;
+        hasEvaluated = false;
+
         Lifeform.Reset();
         enabled = true;
     }
 
-    private void Die()
+    public void Die()
     {
+        Evaluate();
+        
         enabled = false;
         Lifeform.Kill();
         GetComponent<SpriteRenderer>().color = new Color(255, 255, 255);
     }
+
+    private void Evaluate()
+    {
+        if (!hasEvaluated)
+        {
+            float energyVal = Simulation.Instance.EnergyPicked > 0 ?
+                energyOrbsPicked / Simulation.Instance.EnergyPicked : 0;
+            float dangerVal = Simulation.Instance.DangerPicked > 0 ?
+                dangerOrbsPicked / Simulation.Instance.DangerPicked : 0;
+
+            float healthVal = health < 0 ?
+                0 : health / HP_MAX;
+
+            float timeVal = timeAlive > Simulation.Instance.GenerationDuration ?
+                1 : timeAlive / Simulation.Instance.GenerationDuration;
+
+            CurrentFitness = healthVal +
+                timeVal + 
+                energyVal - 
+                dangerVal;
+
+#if UNITY_EDITOR
+            //print("Health :" + healthVal);
+            //print("Time Alive: " + timeVal);
+            //print("EnergyVal" + energyVal);
+            //print("DangerVal" + dangerVal);
+            //print("Fitness: " + CurrentFitness);
+#endif 
+            hasEvaluated = true;
+        }
+    }
 }
+

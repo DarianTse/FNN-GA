@@ -36,5 +36,10 @@ public static class MathFunctions
     {
         return Math.Tanh(value);
     }
+
+    public static float ToDegree(float radians)
+    {
+        return radians * (180.0f / (float)Math.PI);
+    }
 }
 

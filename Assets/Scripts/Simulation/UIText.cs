@@ -16,6 +16,7 @@ public class UIText : MonoBehaviour {
                     "Lifeforms Alive: " + Simulation.Instance.LifeformsAliveCount.ToString() + "\n" +
                     "Highest Fitness: " + Simulation.Instance.HighestFitness.ToString() + "\n" +
                     "Danger Resources Picked: " + Simulation.Instance.DangerPicked.ToString() + "\n" +
-                    "Energy Resources Picked: " + Simulation.Instance.EnergyPicked.ToString(); 
+                    "Energy Resources Picked: " + Simulation.Instance.EnergyPicked.ToString() + "\n" +
+                    "Time Left (Fixed Time): " + Simulation.Instance.TimeLeft.ToString();
 	}
 }

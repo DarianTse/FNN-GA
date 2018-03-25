@@ -9,6 +9,8 @@ using System.Collections.Generic;
 /// </summary>
 public class Genotype : IComparable<Genotype>, IEnumerable<float>
 {
+    //Evaluation Data (energy/danger orbs picked)
+    public float[] Data { get; set; }
 
     //Fitness of this genotype
     public float Fitness { get; set; }

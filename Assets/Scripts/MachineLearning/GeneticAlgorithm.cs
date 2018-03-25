@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class GeneticAlgorithm{
 
@@ -23,7 +24,7 @@ public class GeneticAlgorithm{
     public uint GenerationCount { get; private set; }
 
     //Highest fitness
-    public int HighestFitness { get; set; }
+    public float HighestFitness { get; set; }
 
     /// <summary>
     /// Initialise new genetic algorithm, filling currentPopulation with genotypes
@@ -64,7 +65,7 @@ public class GeneticAlgorithm{
 
     public void EndGeneration()
     {
-        CalculateFitness(currentPopulation);
+        //CalculateFitness(currentPopulation); Directly set from lifeform controller
 
         //Sort population with highest fitness at the front
         currentPopulation.Sort();
@@ -94,10 +95,6 @@ public class GeneticAlgorithm{
     }
 
 
-    public void CalculateFitness(List<Genotype> population)
-    {
-    }
-
     /// <summary>
     /// Selection function to get the best
     /// </summary>
@@ -106,7 +103,7 @@ public class GeneticAlgorithm{
     public List<Genotype> SelectBestPopulation(List<Genotype> population)
     {
         List<Genotype> bestPopulation = new List<Genotype>();
-        HighestFitness = (int)population[0].Fitness;
+        HighestFitness = population[0].Fitness;
         bestPopulation.Add(population[0]);
         bestPopulation.Add(population[1]);
 

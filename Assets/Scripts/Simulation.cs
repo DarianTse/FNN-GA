@@ -26,10 +26,13 @@ public class Simulation : MonoBehaviour {
     private GeneticAlgorithm ga;
 
     //Event for all lifeforms dying
-    public event Action AllLifeformsDead; 
+    public event Action AllLifeformsDead;
+
+    public float GenerationDuration = 10.0f;
+    public float TimeLeft { get; set; }
 
     public uint GenerationCount { get { return ga.GenerationCount; } }  
-    public int HighestFitness { get { return ga.HighestFitness; } }
+    public float HighestFitness { get { return ga.HighestFitness; } }
 
     //Danger resources picked up
     public int DangerPicked { get; set; }
@@ -49,6 +52,15 @@ public class Simulation : MonoBehaviour {
     public void Start()
     {
         StartSimulation();
+    }
+
+    public void FixedUpdate()
+    {
+        TimeLeft -= Time.fixedDeltaTime;
+        if (TimeLeft <= 0)
+        { 
+            lifeformControllers.ForEach(c => c.Die());  
+        }
     }
 
     public void StartSimulation()
@@ -74,6 +86,7 @@ public class Simulation : MonoBehaviour {
         LifeformsAliveCount = 0;
         DangerPicked = 0;
         EnergyPicked = 0;
+        TimeLeft = GenerationDuration;
 
         //Create list of lifeforms with genotypes in current population
         currentPopulation.ForEach(genotype => lifeforms.Add(new LifeForm(genotype, NNLayersSize)));
