@@ -171,7 +171,7 @@ MonoBehaviour:
     type: 2}
   dangerPrefab: {fileID: 1467685139358124, guid: fae446068db34f24480a6bc6981d30bd,
     type: 2}
-  resourcesCount: 40
+  resourcesCount: 100
 --- !u!1 &392745142
 GameObject:
   m_ObjectHideFlags: 0

@@ -59,7 +59,13 @@ public class Simulation : MonoBehaviour {
         TimeLeft -= Time.fixedDeltaTime;
         if (TimeLeft <= 0)
         { 
-            lifeformControllers.ForEach(c => c.Die());  
+            foreach(LifeformController c in lifeformControllers)
+            {
+                if(c.enabled)
+                {
+                    c.Die();
+                }
+            }
         }
     }
 
@@ -70,7 +76,7 @@ public class Simulation : MonoBehaviour {
 
         //Setup genetic algorithm
         ga = new GeneticAlgorithm(nn.WeightCount, (uint)PopulationSize);
-        ga.StartGeneration = InitialiseLifeforms;
+        ga.StartGeneration = CallInitLifeforms;
         AllLifeformsDead += ga.EndGeneration;
         ga.Start();
 
@@ -79,9 +85,15 @@ public class Simulation : MonoBehaviour {
 #endif
     }
 
-    //Create new lifeforms using the genotype population from the genetic algorithm
-    private void InitialiseLifeforms(List<Genotype> currentPopulation)
+    private void CallInitLifeforms(List<Genotype> currentPopulation)
     {
+        StartCoroutine(InitialiseLifeforms(currentPopulation));
+    }
+
+    //Create new lifeforms using the genotype population from the genetic algorithm
+    private IEnumerator InitialiseLifeforms(List<Genotype> currentPopulation)
+    {
+        yield return new WaitForFixedUpdate();
         lifeforms.Clear();
         LifeformsAliveCount = 0;
         DangerPicked = 0;

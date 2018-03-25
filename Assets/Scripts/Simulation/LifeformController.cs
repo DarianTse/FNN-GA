@@ -36,7 +36,7 @@ public class LifeformController : MonoBehaviour {
     const float HP_GAIN_VALUE = 2;
     const float HP_LOSS_VALUE = 1;
     const float HP_INITIAL = 5;
-    const float HP_MAX = 10;
+    const float HP_MAX = 5;
 
     //Evaluation variables
     int energyOrbsPicked, dangerOrbsPicked;
