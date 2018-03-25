@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class GeneticAlgorithm{
 
-    private const float CrossoverRate = 0.7f;
-    private const float GenotypeMutationRate = 1;
-    private const float GeneMutationRate = 0.3f;
-    private const float GeneMutationAmount = 2;
+    private const float CrossoverRate = 0.6f; //Chance of genes crossing over
+    private const float GenotypeMutationRate = 1; //Chance of the chromosome mutating
+    private const float GeneMutationRate = 0.4f; //if ^, Chance of genes mutating
+    private const float GeneMutationAmount = 2; //Amount to mutate by
 
     public delegate void StartGenerationDelegate(List<Genotype> currentPopulation);
     public StartGenerationDelegate StartGeneration; 
