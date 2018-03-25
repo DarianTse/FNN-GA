@@ -105,7 +105,7 @@ public class LifeformController : MonoBehaviour {
             moveVec.y = Mathf.Sin((float)angle);
 
             //Update position
-            transform.position += moveVec * (float)speed * Time.deltaTime;
+            transform.position += moveVec * (float)speed * Time.fixedDeltaTime;
 
             //Update out of bounds
             Vector3 pos = transform.position;
