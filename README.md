@@ -10,6 +10,11 @@
 
 2D simulation where lifeforms learn to pick up yellow orbs and avoid red orbs.
 
+## Controls
+
+Spacebar - Toggle timer
+X - End Generation Early
+
 ## Important Code
 
 #### Simulation.cs
