@@ -66,6 +66,7 @@ public class GeneticAlgorithm{
     public void EndGeneration()
     {
         //CalculateFitness(currentPopulation); Directly set from lifeform controller
+        Simulation.Instance.EvaluateAllLifeforms();
 
         //Sort population with highest fitness at the front
         currentPopulation.Sort();

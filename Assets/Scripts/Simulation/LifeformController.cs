@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Class controlling the lifeform. Sends world data as inputs to the associated Lifeform NN and evaluates the fitness of the Lifeform Genotype
+/// </summary>
 public class LifeformController : MonoBehaviour {
 
     //lifeform that this controller controls
@@ -155,14 +159,14 @@ public class LifeformController : MonoBehaviour {
 
     public void Die()
     {
-        Evaluate();
+        //Evaluate();
         
         enabled = false;
         Lifeform.Kill();
         GetComponent<SpriteRenderer>().color = new Color(255, 255, 255);
     }
 
-    private void Evaluate()
+    public void Evaluate()
     {
         if (!hasEvaluated)
         {
@@ -183,11 +187,11 @@ public class LifeformController : MonoBehaviour {
                 dangerVal;
 
 #if UNITY_EDITOR
-            //print("Health :" + healthVal);
-            //print("Time Alive: " + timeVal);
-            //print("EnergyVal" + energyVal);
-            //print("DangerVal" + dangerVal);
-            //print("Fitness: " + CurrentFitness);
+            print("Health :" + healthVal);
+            print("Time Alive: " + timeVal);
+            print("EnergyVal" + energyVal);
+            print("DangerVal" + dangerVal);
+            print("Fitness: " + CurrentFitness);
 #endif 
             hasEvaluated = true;
         }

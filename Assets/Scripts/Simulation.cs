@@ -60,19 +60,19 @@ public class Simulation : MonoBehaviour {
         if(isCountingDown)
             TimeLeft -= Time.fixedDeltaTime;
         if (TimeLeft <= 0)
-        { 
-            foreach(LifeformController c in lifeformControllers)
-            {
-                if(c.enabled)
-                {
-                    c.Die();
-                }
-            }
+        {
+            EvaluateAllLifeforms();
+            KillAllLifeforms();
         }
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
             isCountingDown = !isCountingDown;
+        }
+        if(Input.GetKeyDown(KeyCode.X))
+        {
+            EvaluateAllLifeforms();
+            KillAllLifeforms();
         }
     }
 
@@ -134,6 +134,23 @@ public class Simulation : MonoBehaviour {
         }
 
 
+    }
+
+    public void EvaluateAllLifeforms()
+    {
+        lifeformControllers.ForEach(c => c.Evaluate());
+    }
+
+    //Kill all lifeforms
+    private void KillAllLifeforms()
+    {
+        foreach (LifeformController c in lifeformControllers)
+        {
+            if (c.enabled)
+            {
+                c.Die();
+            }
+        }
     }
 
     //LifeformDied callback
