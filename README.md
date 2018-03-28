@@ -6,6 +6,8 @@
 
 3/25/2018 : The new fitness function is working a lot better. It could also be because of the 2 extra inputs for angle. Solid improvements are seen by generation 15. 
 
+3/27/2018 : Added danger rectangle and a ton more inputs. Takes longer to train but they eventually learn.
+
 ## Introduction
 
 2D simulation where lifeforms learn to pick up yellow orbs and avoid red orbs.
@@ -43,7 +45,8 @@ Wrapper class for GenoType.cs (Contains the chromosome (solution)) and NeuralNet
 
 Contains the behaviour of the LifeForm via providing inputs and retrieving outputs from the neural network. 
 
-Inputs[8] - closest energy orb x and y, closest danger orb x and y, current move vec x and y, angle between lifeform and closest energy orb, angle between lifeform and closest danger orb
+Inputs[16] - closest energy orb x and y, closest danger orb x and y, current move vec x and y, angle between lifeform and closest energy orb, angle between lifeform and closest danger orb
+The x and y of the 4 corners of the danger zone(purple rectangle)
 
 Outputs[0] - Left turn rate
 
