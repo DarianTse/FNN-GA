@@ -4,14 +4,25 @@ using UnityEngine;
 
 public class WorldController : MonoBehaviour {
 
+    //Instance
     public static WorldController Instance;
 
+    //The X and Y boundaries of the camera
     public float BoundaryX, BoundaryY;
 
+    //Danger zone reference -> Assigned in inspector
+    public GameObject DangerZone;
+
+    //Prefab
     public GameObject energyPrefab;
     public GameObject dangerPrefab;
+
+    //Total resources spawned on map (Spawns with a ratio of 2:1 energy:danger)
     public int resourcesCount = 10;
+
+    //Array of resources
     public Transform[] Resources { get; private set; }
+
     const float RESOURCE_PICKUP_RADIUS = 0.22f;
 
 
@@ -26,6 +37,7 @@ public class WorldController : MonoBehaviour {
 
     }
 
+    //Get camera values
 	void Start () {
         BoundaryY = Camera.main.orthographicSize;
         BoundaryX = BoundaryY * Screen.width / Screen.height;
@@ -33,6 +45,19 @@ public class WorldController : MonoBehaviour {
         ResetResources();
 	}
 
+    /// <summary>
+    /// Check if parameter pos is inside the danger zone
+    /// </summary>
+    /// <param name="pos">The position to compare</param>
+    /// <returns>true if inside</returns>
+    public bool WithinDangerZone(Vector3 pos)
+    {
+        if(DangerZone.GetComponent<Collider>().bounds.Contains(pos))
+        {
+            return true;
+        }
+        return false;
+    }
 
     /// <summary>
     ///  Clear energy resources array. Respawn them in random positions
@@ -128,6 +153,26 @@ public class WorldController : MonoBehaviour {
                                           (float)MathFunctions.GetRandom(-BoundaryY, BoundaryY),
                                           0);
         return position;
+    }
+
+    public Vector3 GetRandomPositionOutsideDangerZone()
+    {
+        //Get the ratio of the dangerzone position relative to the boundaries. 
+        float ratioX = (DangerZone.transform.position.x + BoundaryX) / (BoundaryX * 2);
+        float ratioY = (DangerZone.transform.position.y + BoundaryY) / (BoundaryY * 2);
+
+        float val = Random.Range(0.0f,1.0f);
+        //Get a random value on the left side of danger zone if random value is less than ratioX, right side if greater
+        float randomX = val < ratioX ?
+            Random.Range(-BoundaryX, -DangerZone.GetComponent<Renderer>().bounds.extents.x) :
+            Random.Range(DangerZone.GetComponent<Renderer>().bounds.extents.x, BoundaryX);
+        val = Random.Range(0.0f, 1.0f);
+        //Get a random value below the danger zone if random value is less than ratioY, above if greater
+        float randomY = val < ratioY ?
+            Random.Range(-BoundaryY, -DangerZone.GetComponent<Renderer>().bounds.extents.y) :
+            Random.Range(DangerZone.GetComponent<Renderer>().bounds.extents.y, BoundaryY);
+
+        return new Vector3(randomX, randomY, 0);
     }
 
     //Check if position is out of bounds and rectify it

@@ -26,6 +26,17 @@ public class LifeformController : MonoBehaviour {
     float closestDangerX;
     float closestDangerY;
 
+    //Danger Area
+    float btmLeftX;
+    float btmLeftY;
+    float btmRightX;
+    float btmRightY;
+    float topLeftX;
+    float topLeftY;
+    float topRightX;
+    float topRightY;
+        
+
     //Inputs for neural network : Lifeform travel direction
     public Vector3 moveVec;
 
@@ -37,7 +48,7 @@ public class LifeformController : MonoBehaviour {
 
     //lifeform variables
     const float HP_LOSS_OVER_TIME_VALUE = 1;
-    const float HP_GAIN_VALUE = 2;
+    const float HP_GAIN_VALUE = 3;
     const float HP_LOSS_VALUE = 1;
     const float HP_INITIAL = 5;
     const float HP_MAX = 5;
@@ -45,7 +56,13 @@ public class LifeformController : MonoBehaviour {
     //Evaluation variables
     int energyOrbsPicked, dangerOrbsPicked;
     public float timeAlive;
+    public float timeInDangerZone;
     private bool hasEvaluated;
+
+    private GameObject DangerZone {
+        get { return WorldController.Instance.DangerZone; }
+        set { } 
+    }
 
     void Start()
     {
@@ -74,6 +91,15 @@ public class LifeformController : MonoBehaviour {
             closestDangerX = WorldController.Instance.Resources[closestResourceIndex[1]].position.x;
             closestDangerY = WorldController.Instance.Resources[closestResourceIndex[1]].position.y;
 
+            btmLeftX = DangerZone.transform.position.x - DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
+            btmLeftY = DangerZone.transform.position.y - DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
+            btmRightX = DangerZone.transform.position.x + DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
+            btmRightY = DangerZone.transform.position.y - DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
+
+            topLeftX = DangerZone.transform.position.x - DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
+            topLeftY = DangerZone.transform.position.y + DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
+            topRightX = DangerZone.transform.position.x + DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
+            topRightY = DangerZone.transform.position.y + DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
 
             //Angle between closest resource and lifeform
             //dot product of move vec and lifeform->closestEnergyResource vec 
@@ -89,7 +115,9 @@ public class LifeformController : MonoBehaviour {
             //Inputs to neural network 
             double[] inputs = {closestEnergyX, closestEnergyY, energyAngle,
                             closestDangerX, closestDangerY, dangerAngle,
-                              moveVec.x, moveVec.y};
+                              moveVec.x, moveVec.y,
+                            btmLeftX, btmLeftY, btmRightX, btmRightY,
+                            topLeftX, topLeftY, topRightX, topRightY,};
 
             //output values from the nn, outputs are left and right speed
             double[] nnOutputs = Lifeform.NN.CalculateOutputs(inputs);
@@ -115,6 +143,13 @@ public class LifeformController : MonoBehaviour {
             Vector3 pos = transform.position;
             WorldController.Instance.FixOutOfBounds(ref pos);
             transform.position = pos;
+
+            //Check if in dangerzone
+            if(WorldController.Instance.WithinDangerZone(transform.position))
+            {
+                timeInDangerZone += Time.fixedDeltaTime;
+                health -= HP_LOSS_OVER_TIME_VALUE * 0.1f;
+            }
 
             //Check if lifeform can pickup resource
             int index = WorldController.Instance.ResourceOnPosition(transform.position);
@@ -178,20 +213,25 @@ public class LifeformController : MonoBehaviour {
             float healthVal = health < 0 ?
                 0 : health / HP_MAX;
 
-            float timeVal = timeAlive > Simulation.Instance.GenerationDuration ?
+            float timeVal = !Simulation.Instance.isCountingDown ? 
+                0 : timeAlive > Simulation.Instance.GenerationDuration ?
                 1 : timeAlive / Simulation.Instance.GenerationDuration;
+
+            float dangerZoneVal = timeInDangerZone > Simulation.Instance.GenerationDuration ?
+                1 : timeInDangerZone / Simulation.Instance.GenerationDuration;
 
             CurrentFitness = healthVal +
                 timeVal + 
                 energyVal - 
-                dangerVal;
+                dangerVal - 
+                dangerZoneVal;
 
 #if UNITY_EDITOR
-            print("Health :" + healthVal);
-            print("Time Alive: " + timeVal);
-            print("EnergyVal" + energyVal);
-            print("DangerVal" + dangerVal);
-            print("Fitness: " + CurrentFitness);
+           // print("Health :" + healthVal);
+           // print("Time Alive: " + timeVal);
+           // print("EnergyVal" + energyVal);
+           // print("DangerVal" + dangerVal);
+           // print("Fitness: " + CurrentFitness);
 #endif 
             hasEvaluated = true;
         }

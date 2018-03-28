@@ -30,7 +30,7 @@ public class Simulation : MonoBehaviour {
 
     public float GenerationDuration = 10.0f;
     public float TimeLeft { get; set; }
-    private bool isCountingDown = true;
+    public bool isCountingDown = true;
 
     public uint GenerationCount { get { return ga.GenerationCount; } }  
     public float HighestFitness { get { return ga.HighestFitness; } }
@@ -115,13 +115,13 @@ public class Simulation : MonoBehaviour {
         {
             for (int i = 0; i < lifeforms.Count; i++)
             {
-                GameObject newLifeform = Instantiate(lifeformPrefab, WorldController.Instance.GetRandomPosition(), Quaternion.identity);
+                GameObject newLifeform = Instantiate(lifeformPrefab, WorldController.Instance.GetRandomPositionOutsideDangerZone(), Quaternion.identity);
                 lifeformControllers.Add(newLifeform.GetComponent<LifeformController>());
             }
         }
         else
         {
-            lifeformControllers.ForEach(lifeform => lifeform.transform.position = WorldController.Instance.GetRandomPosition());
+            lifeformControllers.ForEach(lifeform => lifeform.transform.position = WorldController.Instance.GetRandomPositionOutsideDangerZone());
         }
 
         //Link up lifeform controllers and lifeforms
