@@ -27,14 +27,10 @@ public class LifeformController : MonoBehaviour {
     float closestDangerY;
 
     //Danger Area
-    float btmLeftX;
-    float btmLeftY;
-    float btmRightX;
-    float btmRightY;
-    float topLeftX;
-    float topLeftY;
-    float topRightX;
-    float topRightY;
+    float btmY;
+    float topY;
+    float leftX;
+    float rightX;
         
 
     //Inputs for neural network : Lifeform travel direction
@@ -90,16 +86,13 @@ public class LifeformController : MonoBehaviour {
             closestEnergyY = WorldController.Instance.Resources[closestResourceIndex[0]].position.y;
             closestDangerX = WorldController.Instance.Resources[closestResourceIndex[1]].position.x;
             closestDangerY = WorldController.Instance.Resources[closestResourceIndex[1]].position.y;
+            
+            btmY = DangerZone.transform.position.y - DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
+            rightX = DangerZone.transform.position.x + DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
 
-            btmLeftX = DangerZone.transform.position.x - DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
-            btmLeftY = DangerZone.transform.position.y - DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
-            btmRightX = DangerZone.transform.position.x + DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
-            btmRightY = DangerZone.transform.position.y - DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
+            leftX = DangerZone.transform.position.x - DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
+            topY = DangerZone.transform.position.y + DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
 
-            topLeftX = DangerZone.transform.position.x - DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
-            topLeftY = DangerZone.transform.position.y + DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
-            topRightX = DangerZone.transform.position.x + DangerZone.transform.GetComponent<Renderer>().bounds.extents.x;
-            topRightY = DangerZone.transform.position.y + DangerZone.transform.GetComponent<Renderer>().bounds.extents.y;
 
             //Angle between closest resource and lifeform
             //dot product of move vec and lifeform->closestEnergyResource vec 
@@ -116,8 +109,7 @@ public class LifeformController : MonoBehaviour {
             double[] inputs = {closestEnergyX, closestEnergyY, energyAngle,
                             closestDangerX, closestDangerY, dangerAngle,
                               moveVec.x, moveVec.y,
-                            btmLeftX, btmLeftY, btmRightX, btmRightY,
-                            topLeftX, topLeftY, topRightX, topRightY,};
+                            btmY, topY, leftX, rightX};
 
             //output values from the nn, outputs are left and right speed
             double[] nnOutputs = Lifeform.NN.CalculateOutputs(inputs);
@@ -148,7 +140,7 @@ public class LifeformController : MonoBehaviour {
             if(WorldController.Instance.WithinDangerZone(transform.position))
             {
                 timeInDangerZone += Time.fixedDeltaTime;
-                health -= HP_LOSS_OVER_TIME_VALUE * 0.1f;
+                health -= 0.25f * Time.fixedDeltaTime;
             }
 
             //Check if lifeform can pickup resource
@@ -210,7 +202,8 @@ public class LifeformController : MonoBehaviour {
             float dangerVal = Simulation.Instance.DangerPicked > 0 ?
                 dangerOrbsPicked / Simulation.Instance.DangerPicked : 0;
 
-            float healthVal = health < 0 ?
+            float healthVal = !Simulation.Instance.isCountingDown? 
+                0 : health < 0 ?
                 0 : health / HP_MAX;
 
             float timeVal = !Simulation.Instance.isCountingDown ? 

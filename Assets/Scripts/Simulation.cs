@@ -28,9 +28,9 @@ public class Simulation : MonoBehaviour {
     //Event for all lifeforms dying
     public event Action AllLifeformsDead;
 
-    public float GenerationDuration = 10.0f;
+    public float GenerationDuration = 30.0f;
     public float TimeLeft { get; set; }
-    public bool isCountingDown = true;
+    public bool isCountingDown = false;
 
     public uint GenerationCount { get { return ga.GenerationCount; } }  
     public float HighestFitness { get { return ga.HighestFitness; } }
@@ -40,6 +40,10 @@ public class Simulation : MonoBehaviour {
     //Energy resources picked up
     public int EnergyPicked { get; set; }
 
+    public GameObject DangerZone {
+        get { return WorldController.Instance.DangerZone; }
+        set { }
+    }
     void Awake()
     {
         if(Instance != null)
@@ -57,7 +61,7 @@ public class Simulation : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        if(isCountingDown)
+        if (isCountingDown)
             TimeLeft -= Time.fixedDeltaTime;
         if (TimeLeft <= 0)
         {
@@ -65,15 +69,27 @@ public class Simulation : MonoBehaviour {
             KillAllLifeforms();
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             isCountingDown = !isCountingDown;
         }
-        if(Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X))
         {
             EvaluateAllLifeforms();
             KillAllLifeforms();
         }
+
+        if (Input.GetKey("up"))
+            DangerZone.transform.position = new Vector3(DangerZone.transform.position.x, DangerZone.transform.position.y + 0.1f, 0.0f);
+
+        if (Input.GetKey("down"))
+            DangerZone.transform.position = new Vector3(DangerZone.transform.position.x, DangerZone.transform.position.y - 0.1f, 0.0f);
+
+        if (Input.GetKey("left"))
+            DangerZone.transform.position = new Vector3(DangerZone.transform.position.x - 0.1f, DangerZone.transform.position.y, 0.0f);
+
+        if (Input.GetKey("right"))
+            DangerZone.transform.position = new Vector3(DangerZone.transform.position.x + 0.1f, DangerZone.transform.position.y, 0.0f);
     }
 
     public void StartSimulation()

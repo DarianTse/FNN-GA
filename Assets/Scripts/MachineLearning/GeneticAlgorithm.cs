@@ -151,7 +151,7 @@ public class GeneticAlgorithm{
 
         for (int i = 0; i < geneCount; i++)
         {
-            if(MathFunctions.GetRandom(0,1) > crossoverRate)
+            if(MathFunctions.GetRandom(0,1) < crossoverRate)
             {
                 //swap
                 child1Chromosome[i] = parent2.Chromosome[i];

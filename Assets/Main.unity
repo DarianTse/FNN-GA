@@ -139,8 +139,8 @@ MonoBehaviour:
   lifeformPrefab: {fileID: 1247094857347904, guid: 5d1188588e91b1f4782fc9240095a866,
     type: 2}
   PopulationSize: 30
-  NNLayersSize: 100000000c000000080000000400000002000000
-  GenerationDuration: 10
+  NNLayersSize: 0c000000080000000400000002000000
+  GenerationDuration: 30
   isCountingDown: 1
 --- !u!4 &381573613
 Transform:
